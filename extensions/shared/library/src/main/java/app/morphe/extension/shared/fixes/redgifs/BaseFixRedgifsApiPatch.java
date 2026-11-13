@@ -277,7 +277,8 @@ public abstract class BaseFixRedgifsApiPatch extends PatchedditInterceptor {
 				// sd at the verified hd file so Sync plays something regardless of which
 				// url field it reads.
 				if (sd == null) sd = hd;
-				Logger.printInfo(() -> "Redgifs: scrape resolved " + gifId + " -> " + hd);
+				final String resolvedHd = hd;
+				Logger.printInfo(() -> "Redgifs: scrape resolved " + gifId + " -> " + resolvedHd);
 				return buildOfflineGifJson(hd, sd);
 			}
 		} catch (IOException ex) {
