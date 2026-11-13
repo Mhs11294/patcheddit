@@ -1,0 +1,42 @@
+name: Build branch
+
+# Builds an unsigned patch bundle for testing, without publishing a release.
+# Runs on every push to a branch other than main/dev, or manually.
+on:
+  workflow_dispatch:
+  push:
+    branches-ignore:
+      - main
+      - dev
+
+jobs:
+  build:
+    name: Build
+    permissions:
+      contents: read
+      packages: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cache Gradle
+        uses: burrunan/gradle-cache-action@v3
+
+      - name: Build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew :patches:buildAndroid
+
+      - name: Upload patch bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: patches
+          path: patches/build/libs/patches-*.mpp
+          if-no-files-found: error
